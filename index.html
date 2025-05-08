@@ -4,67 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>数字华容道</title>
-  <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: #e6f4f1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
-    }
-    h1 {
-      color: #2b7a78;
-    }
-    .controls {
-      margin-bottom: 10px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .board {
-      display: grid;
-      gap: 4px;
-      margin-top: 15px;
-      background: #fff;
-      border: 3px solid #3aafa9;
-      padding: 4px;
-    }
-    .tile {
-      background: #3aafa9;
-      color: #fff;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 6px;
-      font-size: calc(16px + 0.3vw);
-      transition: all 0.3s ease;
-      user-select: none;
-    }
-    .empty {
-      background: transparent;
-      pointer-events: none;
-    }
-    .info {
-      margin-top: 10px;
-      font-size: 16px;
-      color: #17252a;
-    }
-    button, select {
-      padding: 6px 12px;
-      border-radius: 6px;
-      border: none;
-      background: #2b7a78;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #205f5d;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h1>数字华容道</h1>
@@ -85,79 +25,6 @@
   </div>
   <div id="board" class="board"></div>
 
-  <script>
-    let boardEl = document.getElementById("board");
-    let movesEl = document.getElementById("moves");
-    let timerEl = document.getElementById("timer");
-    let sizeSelect = document.getElementById("size");
-
-    let board = [],
-        size = 4,
-        emptyIndex = 0,
-        moves = 0,
-        timer = 0,
-        timerInterval = null;
-
-    function startGame() {
-      clearInterval(timerInterval);
-      timer = 0;
-      timerEl.textContent = "00:00";
-      moves = 0;
-      movesEl.textContent = "0";
-
-      size = parseInt(sizeSelect.value);
-      board = [...Array(size * size).keys()];
-      shuffleBoard();
-      renderBoard();
-
-      timerInterval = setInterval(() => {
-        timer++;
-        let min = String(Math.floor(timer / 60)).padStart(2, '0');
-        let sec = String(timer % 60).padStart(2, '0');
-        timerEl.textContent = `${min}:${sec}`;
-      }, 1000);
-    }
-
-    function shuffleBoard() {
-      // Fisher–Yates shuffle
-      for (let i = board.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [board[i], board[j]] = [board[j], board[i]];
-      }
-      emptyIndex = board.indexOf(0);
-    }
-
-    function renderBoard() {
-      boardEl.innerHTML = "";
-      boardEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-      board.forEach((num, i) => {
-        const tile = document.createElement("div");
-        tile.className = "tile" + (num === 0 ? " empty" : "");
-        tile.textContent = num !== 0 ? num : "";
-        tile.style.height = tile.style.width = `${400 / size}px`;
-        tile.addEventListener("click", () => moveTile(i));
-        boardEl.appendChild(tile);
-      });
-    }
-
-    function moveTile(i) {
-      const targetRow = Math.floor(i / size);
-      const targetCol = i % size;
-      const emptyRow = Math.floor(emptyIndex / size);
-      const emptyCol = emptyIndex % size;
-
-      const distance = Math.abs(targetRow - emptyRow) + Math.abs(targetCol - emptyCol);
-      if (distance === 1) {
-        [board[i], board[emptyIndex]] = [board[emptyIndex], board[i]];
-        emptyIndex = i;
-        moves++;
-        movesEl.textContent = moves;
-        renderBoard();
-      }
-    }
-
-    startGame();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
-
