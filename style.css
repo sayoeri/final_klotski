@@ -1,79 +1,71 @@
-/* 页面基础样式 */
 body {
   font-family: "Helvetica Neue", sans-serif;
-  background: #e6f2f8;
-  color: #333;
-  text-align: center;
+  background: #f0f8ff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
   margin: 0;
-  padding: 20px;
-}
-
-h1 {
-  margin-bottom: 10px;
-  color: #0077aa;
 }
 
 .controls {
-  margin-bottom: 15px;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 
 select,
 button {
-  font-size: 16px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #aaa;
-  background: #fff;
-  cursor: pointer;
-  transition: transform 0.3s ease, opacity 0.3s ease;
-  width: 100px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #ffffff;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  flex-shrink: 0;
 }
 
-select:focus,
 button:hover {
+  background-color: #d0f0ff;
   transform: scale(1.05);
-  opacity: 0.95;
 }
 
-/* 信息显示 */
-.info {
-  margin-bottom: 15px;
-  font-size: 18px;
+.stats {
+  display: flex;
+  gap: 1rem;
 }
 
-/* 棋盘样式 */
 .board {
   display: grid;
-  gap: 6px;
-  margin: 0 auto;
-  max-width: 90vw;
-  max-height: 90vw;
-  width: min(600px, 90vw);
-  aspect-ratio: 1 / 1;
+  gap: 4px;
+  background: #cce7ff;
+  padding: 4px;
+  border-radius: 10px;
 }
 
-/* 方块样式 */
 .tile {
-  background: #b3e5fc;
-  border-radius: 8px;
-  font-weight: bold;
+  background-color: #ffffff;
+  border: 2px solid #a0c4ff;
+  border-radius: 10px;
+  font-size: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.3s ease, transform 0.3s ease;
   user-select: none;
+  transition: transform 0.25s ease;
+  cursor: pointer;
 }
 
-/* 空白块 */
 .tile.empty {
-  background: transparent;
+  background-color: transparent;
+  border: none;
   cursor: default;
 }
 
-/* 移动动画反馈 */
-.tile.moving {
-  background-color: #c0e8ff;
-  transform: scale(1.05);
+@media (min-width: 768px) {
+  .tile {
+    font-size: 1.2rem;
+  }
 }
-
-/* 响应式字体调整（已在 JS 中动态控制） */

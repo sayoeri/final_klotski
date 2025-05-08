@@ -1,92 +1,104 @@
-let boardEl = document.getElementById("board");
-let movesEl = document.getElementById("moves");
-let timerEl = document.getElementById("timer");
-let sizeSelect = document.getElementById("size");
+const board = document.getElementById("board");
+const sizeSelector = document.getElementById("size");
+const startButton = document.getElementById("start");
+const movesDisplay = document.getElementById("moves");
+const timerDisplay = document.getElementById("timer");
 
-let board = [], size = 4, emptyIndex = 0;
-let moves = 0, timer = 0, timerInterval = null;
+let tiles = [];
+let emptyTile = null;
+let size = 8;
+let moveCount = 0;
+let timer = null;
+let secondsElapsed = 0;
 
-function startGame() {
-  clearInterval(timerInterval);
-  timer = 0;
-  moves = 0;
-  timerEl.textContent = "00:00";
-  movesEl.textContent = "0";
+function updateStats() {
+  movesDisplay.textContent = moveCount;
+  const mins = Math.floor(secondsElapsed / 60);
+  const secs = secondsElapsed % 60;
+  timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, "0")}`;
+}
 
-  size = parseInt(sizeSelect.value);
-  board = [...Array(size * size).keys()];
-  shuffleBoard();
-  renderBoard();
-
-  timerInterval = setInterval(() => {
-    timer++;
-    let min = String(Math.floor(timer / 60)).padStart(2, '0');
-    let sec = String(timer % 60).padStart(2, '0');
-    timerEl.textContent = `${min}:${sec}`;
+function startTimer() {
+  clearInterval(timer);
+  secondsElapsed = 0;
+  timer = setInterval(() => {
+    secondsElapsed++;
+    updateStats();
   }, 1000);
 }
 
-function shuffleBoard() {
-  for (let i = board.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [board[i], board[j]] = [board[j], board[i]];
-  }
-  emptyIndex = board.indexOf(0);
+function stopTimer() {
+  clearInterval(timer);
 }
 
-function renderBoard() {
-  boardEl.innerHTML = "";
-  boardEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-  board.forEach((num, i) => {
+function createTiles() {
+  board.innerHTML = "";
+  tiles = [];
+  board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+  board.style.gridTemplateRows = `repeat(${size}, 1fr)`;
+
+  let nums = [...Array(size * size).keys()];
+  nums = shuffle(nums);
+
+  for (let i = 0; i < size * size; i++) {
     const tile = document.createElement("div");
-    tile.className = "tile" + (num === 0 ? " empty" : "");
-    tile.textContent = num !== 0 ? num : "";
-    tile.style.fontSize = `${Math.max(12, 32 - size)}px`;
+    tile.className = "tile";
+    if (nums[i] === 0) {
+      tile.classList.add("empty");
+      emptyTile = { index: i };
+    } else {
+      tile.textContent = nums[i];
+    }
+
+    tile.style.height = tile.style.width = `${Math.max(30, 480 / size)}px`;
     tile.addEventListener("click", () => moveTile(i));
-    boardEl.appendChild(tile);
-  });
-}
-
-function moveTile(i) {
-  const targetRow = Math.floor(i / size);
-  const targetCol = i % size;
-  const emptyRow = Math.floor(emptyIndex / size);
-  const emptyCol = emptyIndex % size;
-
-  const distance = Math.abs(targetRow - emptyRow) + Math.abs(targetCol - emptyCol);
-  if (distance === 1) {
-    [board[i], board[emptyIndex]] = [board[emptyIndex], board[i]];
-    emptyIndex = i;
-    moves++;
-    movesEl.textContent = moves;
-    animateMove(i);
-    renderBoard();
-    if (checkWin()) endGame();
+    board.appendChild(tile);
+    tiles.push(tile);
   }
 }
 
-function animateMove(i) {
-  const tiles = boardEl.children;
-  if (tiles[i]) {
-    tiles[i].style.transform = "scale(1.05)";
-    setTimeout(() => {
-      tiles[i].style.transform = "scale(1)";
-    }, 150);
+function shuffle(array) {
+  // Fisher-Yates Shuffle
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function moveTile(index) {
+  const dx = Math.abs((index % size) - (emptyTile.index % size));
+  const dy = Math.abs(Math.floor(index / size) - Math.floor(emptyTile.index / size));
+  if (dx + dy === 1) {
+    [tiles[index].textContent, tiles[emptyTile.index].textContent] = [tiles[emptyTile.index].textContent, tiles[index].textContent];
+    tiles[index].classList.add("empty");
+    tiles[emptyTile.index].classList.remove("empty");
+
+    [tiles[index], tiles[emptyTile.index]] = [tiles[emptyTile.index], tiles[index]];
+    emptyTile.index = index;
+
+    moveCount++;
+    updateStats();
+    checkWin();
   }
 }
 
 function checkWin() {
-  for (let i = 0; i < board.length - 1; i++) {
-    if (board[i] !== i + 1) return false;
+  for (let i = 0; i < tiles.length - 1; i++) {
+    if (tiles[i].textContent != i + 1) return;
   }
-  return board[board.length - 1] === 0;
-}
+  if (!tiles[tiles.length - 1].classList.contains("empty")) return;
 
-function endGame() {
-  clearInterval(timerInterval);
+  stopTimer();
   setTimeout(() => {
-    alert(`🎉 恭喜通关！用时 ${timerEl.textContent}，步数 ${moves}`);
-  }, 300);
+    alert(`🎉 恭喜通关！共 ${moveCount} 步，用时 ${Math.floor(secondsElapsed / 60)} 分 ${secondsElapsed % 60} 秒`);
+  }, 100);
 }
 
-startGame();
+startButton.addEventListener("click", () => {
+  size = parseInt(sizeSelector.value, 10);
+  moveCount = 0;
+  updateStats();
+  createTiles();
+  startTimer();
+});

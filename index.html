@@ -5,146 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>数字华容道</title>
   <link rel="stylesheet" href="style.css" />
-  <style>
-    /* 添加下拉菜单弹出动画样式 */
-    select {
-      appearance: none;
-      width: 100px;
-      padding: 4px;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-    select:focus {
-      transform: scale(1.05);
-      opacity: 0.95;
-    }
-
-    /* 方块移动动画 */
-    .tile {
-      transition: transform 0.3s ease, background-color 0.3s ease;
-    }
-    .tile.moving {
-      background-color: #c0e8ff;
-      transform: scale(1.05);
-    }
-  </style>
 </head>
 <body>
-  <h1>数字华容道</h1>
   <div class="controls">
-    <label for="size">选择大小:</label>
+    <label for="size">选择大小：</label>
     <select id="size">
-      <option value="3">3x3</option>
-      <option value="4">4x4</option>
-      <option value="5">5x5</option>
-      <option value="8">8x8</option>
-      <option value="10">10x10</option>
-      <option value="15">15x15</option>
+      <option value="8">8 x 8</option>
+      <option value="15">15 x 15</option>
     </select>
-    <button onclick="startGame()">开始新游戏</button>
-  </div>
-  <div class="info">
-    步数: <span id="moves">0</span> |
-    时间: <span id="timer">00:00</span>
+    <button id="start">开始游戏</button>
+    <div class="stats">
+      <span>步数：<span id="moves">0</span></span>
+      <span>时间：<span id="timer">0:00</span></span>
+    </div>
   </div>
   <div id="board" class="board"></div>
 
-  <!-- 加入音效文件 -->
-  <audio id="moveSound" src="move.mp3" preload="auto"></audio>
-
-  <script>
-    let boardEl = document.getElementById("board");
-    let movesEl = document.getElementById("moves");
-    let timerEl = document.getElementById("timer");
-    let sizeSelect = document.getElementById("size");
-    let moveSound = document.getElementById("moveSound");
-
-    let board = [], size = 4, emptyIndex = 0;
-    let moves = 0, timer = 0, timerInterval = null;
-
-    function startGame() {
-      clearInterval(timerInterval);
-      timer = 0;
-      moves = 0;
-      timerEl.textContent = "00:00";
-      movesEl.textContent = "0";
-
-      size = parseInt(sizeSelect.value);
-      board = [...Array(size * size).keys()];
-      shuffleBoard();
-      renderBoard();
-
-      timerInterval = setInterval(() => {
-        timer++;
-        let min = String(Math.floor(timer / 60)).padStart(2, '0');
-        let sec = String(timer % 60).padStart(2, '0');
-        timerEl.textContent = `${min}:${sec}`;
-      }, 1000);
-    }
-
-    function shuffleBoard() {
-      for (let i = board.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [board[i], board[j]] = [board[j], board[i]];
-      }
-      emptyIndex = board.indexOf(0);
-    }
-
-    function renderBoard() {
-      boardEl.innerHTML = "";
-      boardEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
-      board.forEach((num, i) => {
-        const tile = document.createElement("div");
-        tile.className = "tile" + (num === 0 ? " empty" : "");
-        tile.textContent = num !== 0 ? num : "";
-        tile.style.fontSize = `${Math.max(12, 32 - size)}px`;
-        tile.dataset.index = i;
-        tile.addEventListener("click", () => moveTile(i));
-        boardEl.appendChild(tile);
-      });
-    }
-
-    function moveTile(i) {
-      const targetRow = Math.floor(i / size);
-      const targetCol = i % size;
-      const emptyRow = Math.floor(emptyIndex / size);
-      const emptyCol = emptyIndex % size;
-
-      const distance = Math.abs(targetRow - emptyRow) + Math.abs(targetCol - emptyCol);
-      if (distance === 1) {
-        moveSound.currentTime = 0;
-        moveSound.play();
-
-        const tileEls = [...boardEl.children];
-        const tile = tileEls[i];
-        tile.classList.add("moving");
-
-        [board[i], board[emptyIndex]] = [board[emptyIndex], board[i]];
-        emptyIndex = i;
-        moves++;
-        movesEl.textContent = moves;
-
-        setTimeout(() => {
-          renderBoard();
-          if (checkWin()) endGame();
-        }, 300);
-      }
-    }
-
-    function checkWin() {
-      for (let i = 0; i < board.length - 1; i++) {
-        if (board[i] !== i + 1) return false;
-      }
-      return board[board.length - 1] === 0;
-    }
-
-    function endGame() {
-      clearInterval(timerInterval);
-      setTimeout(() => {
-        alert(`🎉 恭喜通关！用时 ${timerEl.textContent}，步数 ${moves}`);
-      }, 300);
-    }
-
-    startGame();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
