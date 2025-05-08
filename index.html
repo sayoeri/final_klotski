@@ -6,13 +6,22 @@
   <title>数字华容道</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* 添加下拉菜单动画样式 */
+    /* 添加下拉菜单弹出动画样式 */
     select {
+      appearance: none;
       transition: transform 0.3s ease, opacity 0.3s ease;
     }
     select:focus {
       transform: scale(1.05);
       opacity: 0.95;
+    }
+
+    /* 方块移动动画 */
+    .tile {
+      transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+    .tile.moving {
+      background-color: #c0e8ff;
     }
   </style>
 </head>
@@ -24,6 +33,7 @@
       <option value="3">3x3</option>
       <option value="4">4x4</option>
       <option value="5">5x5</option>
+      <option value="8">8x8</option>
       <option value="10">10x10</option>
       <option value="15">15x15</option>
     </select>
@@ -102,7 +112,6 @@
         moveSound.currentTime = 0;
         moveSound.play();
 
-        // 动画过渡
         const tileEls = [...boardEl.children];
         const tile = tileEls[i];
         tile.classList.add("moving");
