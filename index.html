@@ -9,6 +9,8 @@
     /* 添加下拉菜单弹出动画样式 */
     select {
       appearance: none;
+      width: 100px;
+      padding: 4px;
       transition: transform 0.3s ease, opacity 0.3s ease;
     }
     select:focus {
@@ -22,6 +24,7 @@
     }
     .tile.moving {
       background-color: #c0e8ff;
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -108,21 +111,22 @@
 
       const distance = Math.abs(targetRow - emptyRow) + Math.abs(targetCol - emptyCol);
       if (distance === 1) {
-        // 播放音效
         moveSound.currentTime = 0;
         moveSound.play();
 
         const tileEls = [...boardEl.children];
         const tile = tileEls[i];
         tile.classList.add("moving");
-        setTimeout(() => tile.classList.remove("moving"), 300);
 
         [board[i], board[emptyIndex]] = [board[emptyIndex], board[i]];
         emptyIndex = i;
         moves++;
         movesEl.textContent = moves;
-        renderBoard();
-        if (checkWin()) endGame();
+
+        setTimeout(() => {
+          renderBoard();
+          if (checkWin()) endGame();
+        }, 300);
       }
     }
 
