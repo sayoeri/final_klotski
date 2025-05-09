@@ -140,10 +140,11 @@
 
     function isSolvable(b) {
       const inv = getInversionCount(b);
+      const blankRow = Math.floor(b.indexOf(0) / size);
       if (size % 2 === 1) {
         return inv % 2 === 0;
       } else {
-        const rowFromBottom = size - Math.floor(b.indexOf(0) / size);
+        const rowFromBottom = size - blankRow;
         return (inv + rowFromBottom) % 2 === 0;
       }
     }
@@ -186,12 +187,12 @@
         movesEl.textContent = moves;
         renderBoard();
 
-        if (isSolved()) {
-          clearInterval(timerInterval);
-          setTimeout(() => {
+        setTimeout(() => {
+          if (isSolved()) {
+            clearInterval(timerInterval);
             alert(`🎉 恭喜通关！\n步数: ${moves} \n用时: ${timerEl.textContent}`);
-          }, 100);
-        }
+          }
+        }, 10);
       }
     }
 
