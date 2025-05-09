@@ -96,7 +96,9 @@
         emptyIndex = 0,
         moves = 0,
         timer = 0,
-        timerInterval = null;
+        timerInterval = null,
+        gameStarted = false,
+        gameOver = false;
 
     function initBoardOrdered() {
       size = parseInt(sizeSelect.value);
@@ -105,6 +107,8 @@
       renderBoard();
       movesEl.textContent = "0";
       timerEl.textContent = "00:00";
+      gameStarted = false;
+      gameOver = false;
     }
 
     function startGame() {
@@ -113,6 +117,7 @@
       moves = 0;
       movesEl.textContent = "0";
       timerEl.textContent = "00:00";
+      gameOver = false;
 
       size = parseInt(sizeSelect.value);
       do {
@@ -122,6 +127,8 @@
 
       emptyIndex = board.indexOf(0);
       renderBoard();
+
+      gameStarted = true;
 
       timerInterval = setInterval(() => {
         timer++;
@@ -174,6 +181,12 @@
     }
 
     function moveTile(i) {
+      if (!gameStarted) {
+        alert("请先点击“开始新游戏”");
+        return;
+      }
+      if (gameOver) return;
+
       const targetRow = Math.floor(i / size);
       const targetCol = i % size;
       const emptyRow = Math.floor(emptyIndex / size);
@@ -190,6 +203,7 @@
         setTimeout(() => {
           if (isSolved()) {
             clearInterval(timerInterval);
+            gameOver = true;
             alert(`🎉 恭喜通关！\n步数: ${moves} \n用时: ${timerEl.textContent}`);
           }
         }, 10);
